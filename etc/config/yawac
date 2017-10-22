@@ -16,15 +16,7 @@ NewConnCheckTimer=25
 randMac="0"
 
 # Address to ping to test connectivity
-ping_addr="google.fr"
-
-# FreeWifi parameters
-freewifi_ssid="FreeWifi"
-freewifi_login=""
-freewifi_password=""
-freewifi_url_auth="https://wifi.free.fr/Auth"
-freewifi_connexion_reussie="CONNEXION AU SERVICE REUSSIE"
-freewifi_timeout=10
+ping_addr="8.8.8.8"
 
 # Set the wifi
 
