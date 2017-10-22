@@ -105,10 +105,6 @@ net_change() {
                                 fi
                                 break
                         fi
-                        #connect to freewifi
-                        if [ "$ssid" = "$freewifi_ssid" ]; then
-                                freewifi_do_connect
-                        fi
                         if [ "$1" ]; then
                                 echo Connection failed!
                                 break
@@ -117,35 +113,6 @@ net_change() {
                 fi
         done
 }
-
-freewifi_do_connect() {
-        logger "$APP": Detect FreeWifi ssid
-        if [ "$1" ]; then
-                freewifi_login=$1
-                if [ "$2" ]; then
-                        freewifi_password=$2
-                fi
-        fi
-
-        while [ "1" ]; do
-                echo "Envoi des identifiants a l'interface FreeWifi..."
-                WGET_OUT=$(curl -s -k -L -F "login=$freewifi_login" -F "password=$freewifi_password" --connect-timeout $freewifi_timeout --max-time $freewifi_timeout "$freewifi_url_auth" 2>/dev/null | grep -c "$freewifi_connexion_reussie")
-                logger "$APP": FreeWifi credentials sent...
-                ping -q -c2 ${ping_addr} 2>&1
-                if [ $? -eq 0 ] && [ ${WGET_OUT} -eq 0 ]; then
-                        # echo "Modification du MTU de l'interface wlan0..."
-                        # ifconfig wlan0 mtu 1460 2>/dev/null
-                        # echo "Le MTU a ete modifie : $(ifconfig wlan0 | sed -n 's/.*mtu \([0-9]*\).*$/\1/p')"
-                        logger "$APP": Connection to FreeWifi is OK
-                        return 0
-                        exit 0
-                else
-                        logger "$APP": FreeWifi credentials was not accepted
-                        sleep $ConnCheckTimer
-                fi
-        done
-}
-
 rand_mac_addr() {
         macaddr=$(dd if=/dev/urandom bs=1024 count=1 2>/dev/null|md5sum|sed 's/^\(..\)\(..\)\(..\)\(..\)\(..\)\(..\).*$/00:\2:\3:\4:\5:01/')
         # uci set wireless.radio0.macaddr="$macaddr"
@@ -171,10 +138,6 @@ elif [ "$1" = "--daemon" ]; then
                 sleep $ConnCheckTimer
                 net_status
         done
-
-elif [ "$1" = "--freewifi" ]; then
-        freewifi_do_connect $2 $3
-
 else
         echo "Wrong arguments"
 fi
